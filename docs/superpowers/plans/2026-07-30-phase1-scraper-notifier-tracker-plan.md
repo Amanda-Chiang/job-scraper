@@ -1132,7 +1132,13 @@ Verify `.gitignore` (Task 1) already excludes `service-account.json` — it does
 
 - [ ] **Step 3: Create a test Google Sheet for integration tests**
 
-In Google Sheets, create a new spreadsheet named "job-scraper-test" with one tab named `Tracker` and header row: `Company | Link | Position | Location | Date Applied | Status | Referral? | Notes | Date Found`. Share this sheet with the service account's email address (found inside `service-account.json` as `client_email`), with Editor access.
+In Google Sheets, create a new spreadsheet named "job-scraper-test" with four tabs:
+- `Tracker`, header row: `Company | Link | Position | Location | Date Applied | Status | Referral? | Notes | Date Found`
+- `Config`, header row: `Company | ATS Type | Board Token or Slug | Consecutive Failures | Last Error | Last Success At | Notes`
+- `Aggregators`, header row: `Type | Repo or URL | Consecutive Failures | Last Error | Last Success At | Notes`
+- `Keywords`, header row: `Type | Keyword`, with two seed rows: `include | software engineer` and `exclude | senior`
+
+Share this sheet with the service account's email address (found inside `service-account.json` as `client_email`), with Editor access.
 
 - [ ] **Step 4: Export test credentials as environment variables**
 
@@ -1167,7 +1173,7 @@ import os
 import pytest
 
 from models import Posting
-from sheets_client import SheetsClient, TRACKER_TAB, CONFIG_TAB
+from sheets_client import SheetsClient, TRACKER_TAB, CONFIG_TAB, AGGREGATOR_TAB, KEYWORDS_TAB
 
 pytestmark = pytest.mark.skipif(
     not os.environ.get("GOOGLE_TEST_SHEET_ID"),
@@ -1181,6 +1187,34 @@ def client():
         service_account_path=os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"],
         sheet_id=os.environ["GOOGLE_TEST_SHEET_ID"],
     )
+
+
+def test_read_company_list_reads_config_tab(client):
+    ws = client._tab(CONFIG_TAB)
+    ws.append_row(["Read Test Co", "lever", "readtestco", 2, "", "", "seeded by test"])
+    row_index = len(ws.get_all_values())
+    companies = client.read_company_list()
+    match = next(c for c in companies if c.company == "Read Test Co")
+    assert match.ats_type == "lever"
+    assert match.identifier == "readtestco"
+    assert match.consecutive_failures == 2
+    assert match.row_index == row_index
+
+
+def test_read_aggregator_sources_reads_aggregators_tab(client):
+    ws = client._tab(AGGREGATOR_TAB)
+    ws.append_row(["github_list", "someuser/somerepo", 0, "", "", "seeded by test"])
+    row_index = len(ws.get_all_values())
+    aggregators = client.read_aggregator_sources()
+    match = next(a for a in aggregators if a.identifier == "someuser/somerepo")
+    assert match.source_type == "github_list"
+    assert match.row_index == row_index
+
+
+def test_read_keywords_splits_include_and_exclude(client):
+    keywords = client.read_keywords()
+    assert "software engineer" in keywords.include
+    assert "senior" in keywords.exclude
 
 
 def test_append_row_writes_named_columns_and_date_found(client):
@@ -1242,11 +1276,7 @@ def test_record_source_result_failure_increments_and_records_error(client):
 Run: `pytest tests/test_sheets_client.py -v`
 Expected: FAIL with `ModuleNotFoundError: No module named 'sheets_client'`
 
-- [ ] **Step 3: Manually add the `Config` tab to the test sheet**
-
-In the "job-scraper-test" spreadsheet from Task 11, add a tab named `Config` with header row: `Company | ATS Type | Board Token or Slug | Consecutive Failures | Last Error | Last Success At | Notes`.
-
-- [ ] **Step 4: Write the implementation**
+- [ ] **Step 3: Write the implementation**
 
 ```python
 # sheets_client.py
@@ -1348,12 +1378,12 @@ class SheetsClient:
                 ws.update_cell(row_index, header.index(name) + 1, value)
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [ ] **Step 4: Run tests to verify they pass**
 
 Run: `pytest tests/test_sheets_client.py -v`
-Expected: 4 passed (or 4 skipped, if `GOOGLE_TEST_SHEET_ID` isn't set in this environment)
+Expected: 7 passed (or 7 skipped, if `GOOGLE_TEST_SHEET_ID` isn't set in this environment)
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add sheets_client.py tests/test_sheets_client.py
