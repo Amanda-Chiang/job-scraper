@@ -1,1 +1,6 @@
 .superpowers/
+__pycache__/
+*.pyc
+.env
+service-account.json
+.pytest_cache/
