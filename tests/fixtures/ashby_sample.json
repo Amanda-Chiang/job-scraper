@@ -1,0 +1,21 @@
+{
+  "jobs": [
+    {
+      "id": "61d96f6a-757f-47e1-91fd-be2289ef13d7",
+      "title": "Software Engineer, Product Infrastructure",
+      "location": "San Francisco",
+      "jobUrl": "https://jobs.ashbyhq.com/netic/61d96f6a-757f-47e1-91fd-be2289ef13d7",
+      "publishedAt": "2026-06-01T00:00:00.000Z",
+      "isListed": true
+    },
+    {
+      "id": "b0ea7aab-8eea-4d31-96f9-278364180ae7",
+      "title": "Software Engineer (Agent Platform) - Intern - 2026-2027",
+      "location": "San Francisco",
+      "jobUrl": "https://jobs.ashbyhq.com/netic/b0ea7aab-8eea-4d31-96f9-278364180ae7",
+      "publishedAt": "2026-06-10T00:00:00.000Z",
+      "isListed": true
+    }
+  ],
+  "apiVersion": "1"
+}
