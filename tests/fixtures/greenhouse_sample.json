@@ -1,0 +1,19 @@
+{
+  "jobs": [
+    {
+      "id": 7529282002,
+      "title": "Quantitative Researcher",
+      "absolute_url": "https://job-boards.greenhouse.io/aquaticcapitalmanagement/jobs/7529282002",
+      "location": {"name": "Chicago; New York; London"},
+      "updated_at": "2026-07-15T10:00:00-04:00"
+    },
+    {
+      "id": 8489233002,
+      "title": "Software Engineer, Intern (Summer 2027)",
+      "absolute_url": "https://job-boards.greenhouse.io/aquaticcapitalmanagement/jobs/8489233002",
+      "location": {"name": "Chicago, London"},
+      "updated_at": "2026-06-01T09:00:00-04:00"
+    }
+  ],
+  "meta": {"total": 2}
+}
