@@ -77,7 +77,7 @@ Generic aggregator connector. Given a GitHub repo (owner/repo), fetches the repo
 
 ### `matcher.py`
 Pure function(s), no I/O. Applied only to company-source postings (aggregator-source postings bypass this entirely). Takes a list of normalized postings and the keyword config, returns the subset that:
-- Contains at least one include-keyword in the title (case-insensitive). Keyword list (lives in the Google Sheet config tab, editable without a code change) covers a broad "generally interested in tech" scope: `software engineer`, `systems engineer`, `platform engineer`, `infrastructure engineer`, `backend engineer`, `frontend engineer`, `full stack`, `devops`, `site reliability`, `sre`, `security engineer`, `network engineer`, `database engineer`, `embedded software`, `embedded systems`, `firmware`, `silicon`, `asic`, `fpga`, `rtl`, `verification engineer`, `hardware engineer`, `cpu`, `computer engineer`, `electrical engineer`, `robotics engineer`, `quant`, `trading`, `quantitative`, `machine learning`, `ml engineer`, `ai engineer`, `ai engineering`, `artificial intelligence`, `ai infrastructure`, `applied scientist`, `research engineer`, `data engineer`, `forward deployed engineer`, `product manager`, `product engineer`, `technical program manager`.
+- Contains at least one include-keyword in the title (case-insensitive). Keyword list (lives in a dedicated `Keywords` tab in the Google Sheet — `Type (include / exclude) | Keyword` — editable without a code change) covers a broad "generally interested in tech" scope: `software engineer`, `systems engineer`, `platform engineer`, `infrastructure engineer`, `backend engineer`, `frontend engineer`, `full stack`, `devops`, `site reliability`, `sre`, `security engineer`, `network engineer`, `database engineer`, `embedded software`, `embedded systems`, `firmware`, `silicon`, `asic`, `fpga`, `rtl`, `verification engineer`, `hardware engineer`, `cpu`, `computer engineer`, `electrical engineer`, `robotics engineer`, `quant`, `trading`, `quantitative`, `machine learning`, `ml engineer`, `ai engineer`, `ai engineering`, `artificial intelligence`, `ai infrastructure`, `applied scientist`, `research engineer`, `data engineer`, `forward deployed engineer`, `product manager`, `product engineer`, `technical program manager`.
 - Does NOT contain an exclude-keyword: `senior`, `staff`, `principal`, `sr.`, `lead`.
 - Passes the level check: `posting.is_internship` is `True` (source already confirmed it structurally), OR the title contains an internship-level indicator: `intern`, `internship`, `co-op`, `coop`.
 
@@ -85,6 +85,7 @@ Pure function(s), no I/O. Applied only to company-source postings (aggregator-so
 Wraps the Google Sheets API (via `gspread`, using a service account for auth). Responsibilities:
 - `read_company_list() -> list[CompanyConfig]` — reads the config tab (Company, ATS Type, Board Token/Slug/Custom).
 - `read_aggregator_sources() -> list[AggregatorConfig]` — reads the aggregator tab (Type, URL/Repo, Notes).
+- `read_keywords() -> KeywordConfig` — reads the `Keywords` tab into `{include: list[str], exclude: list[str]}`.
 - `get_existing_links() -> set[str]` — reads the entire `Link` column of the tracker tab into a Python set.
 - `append_row(posting: Posting)` — appends one row to the tracker tab: `Company | Link | Position | Location | (blank Date Applied) | (blank Status) | (blank Referral?) | (blank Notes) | Date Found (today's date)`. Column mapping is done by matching the sheet's actual header row by name (not fixed position), so reordering columns in the sheet later doesn't break the writer.
 - `record_source_result(source_id, success: bool, error: str | None)` — on success, resets that row's `Consecutive Failures` to 0 and updates `Last Success At` to now; on failure, increments `Consecutive Failures` and writes the exception message to `Last Error` (truncated to a sane length), leaving `Last Success At` untouched so the user can see exactly how long it's been broken.
@@ -132,6 +133,11 @@ Dedup keys off the posting's unique `Link` URL, not the company name — a singl
 
 **Aggregator tab** (new, added by this project):
 `Type (github_list) | Repo or URL | Consecutive Failures | Last Error | Last Success At | Notes`
+
+**Keywords tab** (new, added by this project):
+`Type (include / exclude) | Keyword`
+
+Seeded with the include/exclude lists from the matcher section above. The user can add or remove rows any time without a code deploy.
 
 `Last Error` and `Last Success At` make scraper health directly visible in the sheet, not just via the 5-failure ntfy alert (see Error handling): the user can open either tab at any time, sort/filter by `Consecutive Failures > 0`, and immediately see which source is broken, the most recent exception message, and how long it's been failing — without waiting for the alert threshold or digging through logs.
 
