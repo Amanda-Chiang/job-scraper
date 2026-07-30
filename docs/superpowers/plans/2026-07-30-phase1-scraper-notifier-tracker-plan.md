@@ -1414,10 +1414,10 @@ from models import AggregatorConfig, CompanyConfig, KeywordConfig, Posting
 import main
 
 
-def _company(ats_type="greenhouse", failures=0, row_index=2):
+def _company(ats_type="greenhouse", failures=0, row_index=2, company="Acme", identifier="acme"):
     return CompanyConfig(
-        row_index=row_index, company="Acme", ats_type=ats_type,
-        identifier="acme", consecutive_failures=failures,
+        row_index=row_index, company=company, ats_type=ats_type,
+        identifier=identifier, consecutive_failures=failures,
     )
 
 
@@ -1457,18 +1457,25 @@ def test_already_seen_link_is_not_renotified():
 
 
 def test_company_fetch_failure_does_not_abort_run():
-    company_a = _company(row_index=2)
+    company_a = _company(row_index=2, company="Acme", identifier="acme")
+    company_b = _company(row_index=3, company="Beta", identifier="beta")
     posting_b = Posting(
         company="Beta", title="Software Engineer Intern", location="SF",
         link="https://beta.com/1", is_internship=True,
     )
-    sheets = _fake_sheets(companies=[company_a])
+    sheets = _fake_sheets(companies=[company_a, company_b])
     with patch("main.greenhouse.fetch", side_effect=[Exception("network error"), [posting_b]]), \
-         patch("main.notifier.send_posting"), patch("main.notifier.send_text"):
+         patch("main.notifier.send_posting") as mock_notify, patch("main.notifier.send_text"):
         main.run(sheets, topic_url="https://ntfy.sh/test")
+    # company_a's failure is recorded...
     sheets.record_source_result.assert_any_call(
         main.CONFIG_TAB, company_a.row_index, success=False, error="network error"
     )
+    # ...but company_b is still fetched and its match still gets through, proving the run continued
+    sheets.record_source_result.assert_any_call(
+        main.CONFIG_TAB, company_b.row_index, success=True, error=None
+    )
+    mock_notify.assert_called_once_with("https://ntfy.sh/test", posting_b)
 
 
 def test_fifth_consecutive_failure_sends_alert():
