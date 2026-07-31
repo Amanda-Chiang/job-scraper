@@ -26,9 +26,9 @@ class SheetsClient:
         return [
             CompanyConfig(
                 row_index=i + 2,
-                company=row["Company"],
-                ats_type=row["ATS Type"],
-                identifier=row["Board Token or Slug"],
+                company=row.get("Company", ""),
+                ats_type=row.get("ATS Type", ""),
+                identifier=row.get("Board Token or Slug", ""),
                 consecutive_failures=int(row.get("Consecutive Failures") or 0),
             )
             for i, row in enumerate(rows)
@@ -40,8 +40,8 @@ class SheetsClient:
         return [
             AggregatorConfig(
                 row_index=i + 2,
-                source_type=row["Type"],
-                identifier=row["Repo or URL"],
+                source_type=row.get("Type", ""),
+                identifier=row.get("Repo or URL", ""),
                 consecutive_failures=int(row.get("Consecutive Failures") or 0),
             )
             for i, row in enumerate(rows)
@@ -50,8 +50,12 @@ class SheetsClient:
     def read_keywords(self) -> KeywordConfig:
         ws = self._tab(KEYWORDS_TAB)
         rows = ws.get_all_records()
-        include = [r["Keyword"] for r in rows if r["Type"].strip().lower() == "include"]
-        exclude = [r["Keyword"] for r in rows if r["Type"].strip().lower() == "exclude"]
+        keyword_rows = [
+            (str(r.get("Type", "")).strip().lower(), str(r.get("Keyword", "")).strip())
+            for r in rows
+        ]
+        include = [kw for kw_type, kw in keyword_rows if kw_type == "include" and kw]
+        exclude = [kw for kw_type, kw in keyword_rows if kw_type == "exclude" and kw]
         return KeywordConfig(include=include, exclude=exclude)
 
     def get_existing_links(self) -> set[str]:
@@ -89,8 +93,12 @@ class SheetsClient:
             }
         else:
             current = ws.cell(row_index, header.index("Consecutive Failures") + 1).value
+            try:
+                current_failures = int(current or 0)
+            except ValueError:
+                current_failures = 0
             updates = {
-                "Consecutive Failures": int(current or 0) + 1,
+                "Consecutive Failures": current_failures + 1,
                 "Last Error": (error or "")[:300],
             }
         for name, value in updates.items():
