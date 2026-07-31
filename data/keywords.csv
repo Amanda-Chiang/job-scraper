@@ -1,0 +1,48 @@
+type,keyword
+include,software engineer
+include,systems engineer
+include,platform engineer
+include,infrastructure engineer
+include,backend engineer
+include,frontend engineer
+include,full stack
+include,devops
+include,site reliability
+include,sre
+include,security engineer
+include,network engineer
+include,database engineer
+include,embedded software
+include,embedded systems
+include,firmware
+include,silicon
+include,asic
+include,fpga
+include,rtl
+include,verification engineer
+include,hardware engineer
+include,cpu
+include,computer engineer
+include,electrical engineer
+include,robotics engineer
+include,quant
+include,trading
+include,quantitative
+include,machine learning
+include,ml engineer
+include,ai engineer
+include,ai engineering
+include,artificial intelligence
+include,ai infrastructure
+include,applied scientist
+include,research engineer
+include,data engineer
+include,forward deployed engineer
+include,product manager
+include,product engineer
+include,technical program manager
+exclude,senior
+exclude,staff
+exclude,principal
+exclude,sr.
+exclude,lead

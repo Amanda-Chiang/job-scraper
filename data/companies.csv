@@ -1,0 +1,99 @@
+company,ats_type,identifier,notes
+Jane Street,custom,jane_street,verified live during design
+D. E. Shaw,custom,de_shaw,verified live during design
+Hudson River Trading,greenhouse,hrttalentcommunity,verified live during design - runs on Greenhouse
+Aquatic Capital Management,greenhouse,aquaticcapitalmanagement,verified from user's tracker
+Schonfeld,greenhouse,schonfeld,verified from user's tracker
+Tower Research Capital,greenhouse,towerresearchcapital,verified from user's tracker
+Flow Traders,greenhouse,flowtraders,verified from user's tracker
+Akuna Capital,greenhouse,akunacapital,verified from user's tracker (gh_jid embed)
+Old Mission Capital,greenhouse,oldmissioncapital,verified from user's tracker (gh_jid embed)
+Five Rings,greenhouse,fiveringsllc,verified from user's tracker
+Databricks,greenhouse,databricks,verified from user's tracker (gh_jid embed)
+The Trade Desk,greenhouse,thetradedesk,verified from user's tracker
+Axon,greenhouse,axontalentcommunity,verified from user's tracker
+Voloridge Investment Management,greenhouse,voloridgeinvestmentmanagement,verified from user's tracker
+Chicago Trading Company,greenhouse,ctccampusboard,verified from user's tracker
+PDT Partners,greenhouse,pdtpartners,verified from user's tracker
+Virtu,greenhouse,virtu,verified from user's tracker
+IMC,greenhouse,imc,verified from user's tracker (eu board)
+Palantir,lever,palantir,verified from user's tracker
+Ellipsis Labs,ashby,ellipsislabs,verified from user's tracker
+Netic,ashby,netic,verified from user's tracker
+Monogram,ashby,monogram,verified from user's tracker
+Anthelion,ashby,anthelioncap,verified from user's tracker
+Together AI,greenhouse,togetherai,verified live during design
+Scale AI,greenhouse,scaleai,verified live during design
+Cohere,ashby,cohere,verified live during design
+ElevenLabs,ashby,elevenlabs,verified live during design
+Modal,unsupported,,verify ATS token
+Fireworks AI,unsupported,,verify ATS token
+Baseten,unsupported,,verify ATS token
+Anyscale,unsupported,,verify ATS token
+Groq,unsupported,,verify ATS token
+Cerebras,unsupported,,verify ATS token
+SambaNova,unsupported,,verify ATS token
+Lambda,unsupported,,verify ATS token
+Replicate,unsupported,,verify ATS token
+RunPod,unsupported,,verify ATS token
+CoreWeave,unsupported,,verify ATS token
+Crusoe Energy,unsupported,,verify ATS token
+Tenstorrent,unsupported,,verify ATS token
+Modular,unsupported,,verify ATS token
+Weights & Biases,unsupported,,verify ATS token
+LangChain,unsupported,,verify ATS token
+LlamaIndex,unsupported,,verify ATS token
+Pinecone,unsupported,,verify ATS token
+Weaviate,unsupported,,verify ATS token
+Qdrant,unsupported,,verify ATS token
+Hugging Face,unsupported,,verify ATS token
+Snorkel AI,unsupported,,verify ATS token
+Labelbox,unsupported,,verify ATS token
+Mistral AI,unsupported,,verify ATS token - "mistral" lever slug returned empty
+Anthropic,unsupported,,verify ATS token
+Perplexity AI,unsupported,,verify ATS token - greenhouse "perplexityai" returned 404
+xAI,unsupported,,verify ATS token
+Stability AI,unsupported,,verify ATS token
+Character.AI,unsupported,,verify ATS token
+Inflection AI,unsupported,,verify ATS token
+Adept AI,unsupported,,verify ATS token
+Imbue,unsupported,,verify ATS token
+Reka AI,unsupported,,verify ATS token
+Runway,unsupported,,verify ATS token
+Luma AI,unsupported,,verify ATS token
+Suno,unsupported,,verify ATS token
+Synthesia,unsupported,,verify ATS token
+Writer,unsupported,,verify ATS token
+Sierra,unsupported,,verify ATS token
+Cresta,unsupported,,verify ATS token
+Glean,unsupported,,verify ATS token
+Harvey AI,unsupported,,verify ATS token
+Abridge,unsupported,,verify ATS token
+Hippocratic AI,unsupported,,verify ATS token
+Cognition Labs,unsupported,,verify ATS token
+Anysphere,unsupported,,Cursor - verify ATS token
+Codeium,unsupported,,Windsurf - verify ATS token
+Applied Intuition,unsupported,,verify ATS token
+Waabi,unsupported,,verify ATS token
+Skild AI,unsupported,,verify ATS token
+Physical Intelligence,unsupported,,verify ATS token
+Optiver,unsupported,,custom career site - candidate for future custom scraper
+Two Sigma,unsupported,,custom career site - candidate for future custom scraper
+Point72,unsupported,,custom career site - candidate for future custom scraper
+Susquehanna (SIG),unsupported,,custom career site - candidate for future custom scraper
+Google,unsupported,,internal ATS - candidate for future custom scraper
+Meta,unsupported,,internal ATS - candidate for future custom scraper
+Amazon,unsupported,,internal ATS - candidate for future custom scraper
+Microsoft,unsupported,,internal ATS (Workday) - candidate for future custom scraper
+Apple,unsupported,,internal ATS - candidate for future custom scraper
+Netflix,unsupported,,internal ATS - candidate for future custom scraper
+NVIDIA,unsupported,,internal ATS (Workday) - candidate for future custom scraper
+Tesla,unsupported,,internal ATS - candidate for future custom scraper
+Oracle,unsupported,,internal ATS - candidate for future custom scraper
+IBM,unsupported,,internal ATS - candidate for future custom scraper
+Salesforce,unsupported,,Workday - candidate for future custom scraper
+Adobe,unsupported,,internal ATS - candidate for future custom scraper
+TikTok,unsupported,,internal ATS - candidate for future custom scraper
+Uber,unsupported,,internal ATS - candidate for future custom scraper
+Qualcomm,unsupported,,internal ATS - candidate for future custom scraper
+Citadel,unsupported,,blocked by Cloudflare bot challenge - deferred to Phase 3
