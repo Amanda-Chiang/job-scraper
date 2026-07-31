@@ -1,3 +1,4 @@
+import base64
 import os
 
 import notifier
@@ -73,9 +74,10 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
 
 
 if __name__ == "__main__":
-    if os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON") and not os.path.exists("/tmp/service-account.json"):
-        with open("/tmp/service-account.json", "w") as f:
-            f.write(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
+    if os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON_B64") and not os.path.exists("/tmp/service-account.json"):
+        decoded = base64.b64decode(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON_B64"])
+        with open("/tmp/service-account.json", "wb") as f:
+            f.write(decoded)
         os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"] = "/tmp/service-account.json"
     sheets_client = SheetsClient(
         service_account_path=os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"],
