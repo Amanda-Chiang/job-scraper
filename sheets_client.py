@@ -13,9 +13,10 @@ KEYWORDS_TAB = "Keywords"
 
 
 class SheetsClient:
-    def __init__(self, service_account_path: str, sheet_id: str):
+    def __init__(self, service_account_path: str, sheet_id: str, tracker_tab: str = TRACKER_TAB):
         gc = gspread.service_account(filename=service_account_path)
         self._spreadsheet = gc.open_by_key(sheet_id)
+        self._tracker_tab = tracker_tab
 
     def _tab(self, name: str):
         return self._spreadsheet.worksheet(name)
@@ -59,14 +60,14 @@ class SheetsClient:
         return KeywordConfig(include=include, exclude=exclude)
 
     def get_existing_links(self) -> set[str]:
-        ws = self._tab(TRACKER_TAB)
+        ws = self._tab(self._tracker_tab)
         header = ws.row_values(1)
         link_col = header.index("Link") + 1
         values = ws.col_values(link_col)[1:]
         return {v for v in values if v}
 
     def append_row(self, posting: Posting) -> None:
-        ws = self._tab(TRACKER_TAB)
+        ws = self._tab(self._tracker_tab)
         header = ws.row_values(1)
         row = [""] * len(header)
         field_map = {

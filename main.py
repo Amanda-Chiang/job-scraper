@@ -76,5 +76,6 @@ if __name__ == "__main__":
     sheets_client = SheetsClient(
         service_account_path=os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"],
         sheet_id=os.environ["GOOGLE_SHEET_ID"],
+        tracker_tab=os.environ.get("TRACKER_TAB_NAME", "Tracker"),
     )
     run(sheets_client, topic_url=os.environ["NTFY_TOPIC_URL"])
