@@ -73,6 +73,10 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
 
 
 if __name__ == "__main__":
+    if os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON") and not os.path.exists("/tmp/service-account.json"):
+        with open("/tmp/service-account.json", "w") as f:
+            f.write(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
+        os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"] = "/tmp/service-account.json"
     sheets_client = SheetsClient(
         service_account_path=os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"],
         sheet_id=os.environ["GOOGLE_SHEET_ID"],
