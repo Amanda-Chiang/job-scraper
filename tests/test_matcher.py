@@ -1,5 +1,5 @@
 from models import Posting, KeywordConfig
-from matcher import filter_relevant
+from matcher import filter_relevant, is_us_location
 
 KEYWORDS = KeywordConfig(
     include=["software engineer", "hardware engineer", "quant", "ai engineer"],
@@ -41,3 +41,21 @@ def test_trusts_is_internship_flag_even_without_title_keyword():
 def test_case_insensitive_matching():
     postings = [_posting("QUANT TRADING INTERN")]
     assert filter_relevant(postings, KEYWORDS) == postings
+
+
+def test_is_us_location_accepts_plain_us_cities():
+    assert is_us_location("NYC") is True
+    assert is_us_location("Mountain View, CA (multiple US)") is True
+    assert is_us_location("Seattle, LA, Denver") is True
+
+
+def test_is_us_location_rejects_known_non_us_cities():
+    assert is_us_location("London, United Kingdom") is False
+    assert is_us_location("Hong Kong") is False
+    assert is_us_location("Toronto") is False
+    assert is_us_location("Chicago; New York; London") is False
+
+
+def test_is_us_location_case_insensitive():
+    assert is_us_location("LONDON") is False
+    assert is_us_location("nyc") is True

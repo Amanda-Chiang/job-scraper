@@ -3,7 +3,7 @@ import os
 
 import notifier
 from dedup import filter_new_postings
-from matcher import filter_relevant
+from matcher import filter_relevant, is_us_location
 from sheets_client import AGGREGATOR_TAB, CONFIG_TAB, SheetsClient
 from sources import ashby, github_list, greenhouse, lever
 from sources.custom import de_shaw, jane_street
@@ -36,11 +36,14 @@ def _handle_source_result(sheets, tab_name, source_config, topic_url, error):
     failures = source_config.consecutive_failures + 1
     if failures == FAILURE_ALERT_THRESHOLD:
         name = getattr(source_config, "company", None) or source_config.identifier
-        notifier.send_text(
-            topic_url,
-            f"⚠️ {name} has failed {FAILURE_ALERT_THRESHOLD} scrape attempts in a row. "
-            f"Last error: {error}",
-        )
+        try:
+            notifier.send_text(
+                topic_url,
+                f"⚠️ {name} has failed {FAILURE_ALERT_THRESHOLD} scrape attempts in a row. "
+                f"Last error: {error}",
+            )
+        except Exception as exc:
+            print(f"Failed to send failure alert for {name}: {exc}")
 
 
 def run(sheets: SheetsClient, topic_url: str) -> None:
@@ -68,9 +71,13 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
         _handle_source_result(sheets, AGGREGATOR_TAB, aggregator_config, topic_url, None)
         new_matches.extend(postings)  # trusted as-is — no matcher call
 
-    for posting in filter_new_postings(new_matches, existing_links):
+    us_matches = [p for p in new_matches if is_us_location(p.location)]
+    for posting in filter_new_postings(us_matches, existing_links):
         sheets.append_row(posting)
-        notifier.send_posting(topic_url, posting)
+        try:
+            notifier.send_posting(topic_url, posting)
+        except Exception as exc:
+            print(f"Failed to send notification for {posting.link}: {exc}")
 
 
 if __name__ == "__main__":
@@ -86,4 +93,7 @@ if __name__ == "__main__":
         sheet_id=os.environ["GOOGLE_SHEET_ID"],
         tracker_tab=os.environ.get("TRACKER_TAB_NAME", "Tracker"),
     )
-    run(sheets_client, topic_url=os.environ["NTFY_TOPIC_URL"])
+    try:
+        run(sheets_client, topic_url=os.environ["NTFY_TOPIC_URL"])
+    except Exception as exc:
+        print(f"Unhandled error during run: {exc}")

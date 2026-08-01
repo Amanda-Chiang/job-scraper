@@ -2,6 +2,26 @@ from models import Posting, KeywordConfig
 
 LEVEL_KEYWORDS = ("intern", "internship", "co-op", "coop")
 
+NON_US_LOCATION_MARKERS = (
+    "london", "united kingdom", " uk", "uk,", "ldn",
+    "hong kong", "hkg",
+    "singapore", "sgp",
+    "toronto", "canada",
+    "zurich", "switzerland",
+    "paris", "france",
+    "tokyo", "japan",
+    "bangalore", "india",
+    "dublin", "ireland",
+    "sydney", "australia",
+    "berlin", "germany",
+    "amsterdam", "netherlands",
+)
+
+
+def is_us_location(location: str) -> bool:
+    loc = location.lower()
+    return not any(marker in loc for marker in NON_US_LOCATION_MARKERS)
+
 
 def is_relevant(posting: Posting, keywords: KeywordConfig) -> bool:
     title = posting.title.lower()
