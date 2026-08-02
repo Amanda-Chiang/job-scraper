@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import datetime
+import functools
+import time
 
 import gspread
 
@@ -10,6 +12,22 @@ TRACKER_TAB = "Tracker"
 CONFIG_TAB = "Config"
 AGGREGATOR_TAB = "Aggregators"
 KEYWORDS_TAB = "Keywords"
+
+QUOTA_RETRY_DELAYS = (5, 15, 30)
+
+
+def _retry_on_quota_error(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        for attempt, delay in enumerate((0, *QUOTA_RETRY_DELAYS)):
+            if delay:
+                time.sleep(delay)
+            try:
+                return func(*args, **kwargs)
+            except gspread.exceptions.APIError as exc:
+                if "429" not in str(exc) or attempt == len(QUOTA_RETRY_DELAYS):
+                    raise
+    return wrapper
 
 
 class SheetsClient:
@@ -21,6 +39,7 @@ class SheetsClient:
     def _tab(self, name: str):
         return self._spreadsheet.worksheet(name)
 
+    @_retry_on_quota_error
     def read_company_list(self) -> list[CompanyConfig]:
         ws = self._tab(CONFIG_TAB)
         rows = ws.get_all_records()
@@ -35,6 +54,7 @@ class SheetsClient:
             for i, row in enumerate(rows)
         ]
 
+    @_retry_on_quota_error
     def read_aggregator_sources(self) -> list[AggregatorConfig]:
         ws = self._tab(AGGREGATOR_TAB)
         rows = ws.get_all_records()
@@ -48,6 +68,7 @@ class SheetsClient:
             for i, row in enumerate(rows)
         ]
 
+    @_retry_on_quota_error
     def read_keywords(self) -> KeywordConfig:
         ws = self._tab(KEYWORDS_TAB)
         rows = ws.get_all_records()
@@ -59,6 +80,7 @@ class SheetsClient:
         exclude = [kw for kw_type, kw in keyword_rows if kw_type == "exclude" and kw]
         return KeywordConfig(include=include, exclude=exclude)
 
+    @_retry_on_quota_error
     def get_existing_links(self) -> set[str]:
         ws = self._tab(self._tracker_tab)
         header = ws.row_values(1)
@@ -66,6 +88,7 @@ class SheetsClient:
         values = ws.col_values(link_col)[1:]
         return {v for v in values if v}
 
+    @_retry_on_quota_error
     def append_row(self, posting: Posting) -> None:
         ws = self._tab(self._tracker_tab)
         header = ws.row_values(1)
@@ -82,6 +105,7 @@ class SheetsClient:
                 row[header.index(name)] = value
         ws.append_row(row, value_input_option="RAW")
 
+    @_retry_on_quota_error
     def record_source_result(
         self, tab_name: str, row_index: int, success: bool, error: str | None
     ) -> None:

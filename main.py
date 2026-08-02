@@ -81,19 +81,19 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
 
 
 if __name__ == "__main__":
-    if os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON_B64") and not os.path.exists("/tmp/service-account.json"):
-        b64_value = "".join(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON_B64"].split())
-        b64_value += "=" * (-len(b64_value) % 4)
-        decoded = base64.b64decode(b64_value)
-        with open("/tmp/service-account.json", "wb") as f:
-            f.write(decoded)
-        os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"] = "/tmp/service-account.json"
-    sheets_client = SheetsClient(
-        service_account_path=os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"],
-        sheet_id=os.environ["GOOGLE_SHEET_ID"],
-        tracker_tab=os.environ.get("TRACKER_TAB_NAME", "Tracker"),
-    )
     try:
+        if os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON_B64") and not os.path.exists("/tmp/service-account.json"):
+            b64_value = "".join(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON_B64"].split())
+            b64_value += "=" * (-len(b64_value) % 4)
+            decoded = base64.b64decode(b64_value)
+            with open("/tmp/service-account.json", "wb") as f:
+                f.write(decoded)
+            os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"] = "/tmp/service-account.json"
+        sheets_client = SheetsClient(
+            service_account_path=os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"],
+            sheet_id=os.environ["GOOGLE_SHEET_ID"],
+            tracker_tab=os.environ.get("TRACKER_TAB_NAME", "Tracker"),
+        )
         run(sheets_client, topic_url=os.environ["NTFY_TOPIC_URL"])
     except Exception as exc:
         print(f"Unhandled error during run: {exc}")
