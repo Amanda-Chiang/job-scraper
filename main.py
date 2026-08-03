@@ -7,6 +7,7 @@ from matcher import (
     filter_relevant,
     is_acceptable_analyst_role,
     is_acceptable_degree_level,
+    is_acceptable_department,
     is_in_season,
     is_us_location,
 )
@@ -83,6 +84,7 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
         and is_acceptable_degree_level(p.title)
         and is_in_season(p.title)
         and is_acceptable_analyst_role(p.title)
+        and is_acceptable_department(p.title)
     ]
     for posting in filter_new_postings(eligible_matches, existing_links):
         sheets.append_row(posting)

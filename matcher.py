@@ -12,6 +12,8 @@ OFF_SEASON_MARKERS = ("spring", "winter", "fall", "autumn")
 ANALYST_PATTERN = re.compile(r"\banalyst\b", re.IGNORECASE)
 QUANT_PATTERN = re.compile(r"\bquant\b|quantitative", re.IGNORECASE)
 
+IT_ROLE_PATTERN = re.compile(r"\bit\b|information technology|help ?desk|desktop support", re.IGNORECASE)
+
 NON_US_LOCATION_MARKERS = (
     "london", "united kingdom", " uk", "uk,", "ldn",
     "hong kong", "hkg",
@@ -49,6 +51,10 @@ def is_acceptable_analyst_role(title: str) -> bool:
     is_analyst_role = bool(ANALYST_PATTERN.search(title))
     is_quant_role = bool(QUANT_PATTERN.search(title))
     return not is_analyst_role or is_quant_role
+
+
+def is_acceptable_department(title: str) -> bool:
+    return not IT_ROLE_PATTERN.search(title)
 
 
 def is_relevant(posting: Posting, keywords: KeywordConfig) -> bool:

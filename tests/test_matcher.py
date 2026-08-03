@@ -3,6 +3,7 @@ from matcher import (
     filter_relevant,
     is_acceptable_analyst_role,
     is_acceptable_degree_level,
+    is_acceptable_department,
     is_in_season,
     is_us_location,
 )
@@ -122,3 +123,25 @@ def test_is_acceptable_analyst_role_keeps_quantitative_analyst():
 
 def test_is_acceptable_analyst_role_accepts_non_analyst_titles():
     assert is_acceptable_analyst_role("Software Engineer Intern") is True
+
+
+def test_is_acceptable_department_rejects_it_roles():
+    assert is_acceptable_department("IT Intern") is False
+    assert is_acceptable_department("IT Operations Engineer") is False
+    assert is_acceptable_department("Information Technology Intern") is False
+    assert is_acceptable_department("Help Desk Support Intern") is False
+
+
+def test_is_acceptable_department_does_not_handle_audit():
+    # "audit" is filtered separately via the Keywords sheet's exclude list, not this function
+    assert is_acceptable_department("Internal Audit Intern") is True
+
+
+def test_is_acceptable_department_does_not_false_positive_on_substring_it():
+    assert is_acceptable_department("Site Reliability Engineer Intern") is True
+    assert is_acceptable_department("Written Communications Intern") is True
+    assert is_acceptable_department("Digital Systems Engineer Intern") is True
+
+
+def test_is_acceptable_department_accepts_normal_titles():
+    assert is_acceptable_department("Software Engineer Intern") is True
