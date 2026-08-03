@@ -46,3 +46,8 @@ exclude,staff
 exclude,principal
 exclude,sr.
 exclude,lead
+exclude,phd
+exclude,ph.d
+exclude,master's
+exclude,masters
+exclude,msc
