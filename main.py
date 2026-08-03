@@ -3,7 +3,13 @@ import os
 
 import notifier
 from dedup import filter_new_postings
-from matcher import filter_relevant, is_acceptable_degree_level, is_in_season, is_us_location
+from matcher import (
+    filter_relevant,
+    is_acceptable_analyst_role,
+    is_acceptable_degree_level,
+    is_in_season,
+    is_us_location,
+)
 from sheets_client import AGGREGATOR_TAB, CONFIG_TAB, SheetsClient
 from sources import ashby, github_list, greenhouse, lever
 from sources.custom import de_shaw, jane_street
@@ -73,7 +79,10 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
 
     eligible_matches = [
         p for p in new_matches
-        if is_us_location(p.location) and is_acceptable_degree_level(p.title) and is_in_season(p.title)
+        if is_us_location(p.location)
+        and is_acceptable_degree_level(p.title)
+        and is_in_season(p.title)
+        and is_acceptable_analyst_role(p.title)
     ]
     for posting in filter_new_postings(eligible_matches, existing_links):
         sheets.append_row(posting)

@@ -1,5 +1,11 @@
 from models import Posting, KeywordConfig
-from matcher import filter_relevant, is_acceptable_degree_level, is_in_season, is_us_location
+from matcher import (
+    filter_relevant,
+    is_acceptable_analyst_role,
+    is_acceptable_degree_level,
+    is_in_season,
+    is_us_location,
+)
 
 KEYWORDS = KeywordConfig(
     include=["software engineer", "hardware engineer", "quant", "ai engineer"],
@@ -101,3 +107,18 @@ def test_is_in_season_accepts_when_no_season_mentioned():
 
 def test_is_in_season_accepts_summer_even_if_off_season_word_also_present():
     assert is_in_season("Summer Internship (December-February)") is True
+
+
+def test_is_acceptable_analyst_role_rejects_generic_analyst_titles():
+    assert is_acceptable_analyst_role("Global Technology Summer Analyst") is False
+    assert is_acceptable_analyst_role("Business Analyst Intern") is False
+    assert is_acceptable_analyst_role("Macro Analyst Intern") is False
+
+
+def test_is_acceptable_analyst_role_keeps_quantitative_analyst():
+    assert is_acceptable_analyst_role("Quantitative Analyst Intern") is True
+    assert is_acceptable_analyst_role("Quant Research Analyst") is True
+
+
+def test_is_acceptable_analyst_role_accepts_non_analyst_titles():
+    assert is_acceptable_analyst_role("Software Engineer Intern") is True

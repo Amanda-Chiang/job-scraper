@@ -9,6 +9,9 @@ BACHELORS_PATTERN = re.compile(r"\bbs\b|\bb\.s\.?|bachelor|undergrad", re.IGNORE
 
 OFF_SEASON_MARKERS = ("spring", "winter", "fall", "autumn")
 
+ANALYST_PATTERN = re.compile(r"\banalyst\b", re.IGNORECASE)
+QUANT_PATTERN = re.compile(r"\bquant\b|quantitative", re.IGNORECASE)
+
 NON_US_LOCATION_MARKERS = (
     "london", "united kingdom", " uk", "uk,", "ldn",
     "hong kong", "hkg",
@@ -40,6 +43,12 @@ def is_in_season(title: str) -> bool:
     has_off_season = any(marker in lower for marker in OFF_SEASON_MARKERS)
     has_summer = "summer" in lower
     return not (has_off_season and not has_summer)
+
+
+def is_acceptable_analyst_role(title: str) -> bool:
+    is_analyst_role = bool(ANALYST_PATTERN.search(title))
+    is_quant_role = bool(QUANT_PATTERN.search(title))
+    return not is_analyst_role or is_quant_role
 
 
 def is_relevant(posting: Posting, keywords: KeywordConfig) -> bool:

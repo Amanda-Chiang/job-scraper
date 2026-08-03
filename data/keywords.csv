@@ -41,6 +41,15 @@ include,forward deployed engineer
 include,product manager
 include,product engineer
 include,technical program manager
+include,gpu
+include,cuda
+include,aerospace
+include,spacecraft
+include,satellite
+include,avionics
+include,propulsion
+include,astronautics
+include,space systems
 exclude,senior
 exclude,staff
 exclude,principal
