@@ -1,5 +1,5 @@
 from models import Posting, KeywordConfig
-from matcher import filter_relevant, is_us_location
+from matcher import filter_relevant, is_acceptable_degree_level, is_in_season, is_us_location
 
 KEYWORDS = KeywordConfig(
     include=["software engineer", "hardware engineer", "quant", "ai engineer"],
@@ -59,3 +59,45 @@ def test_is_us_location_rejects_known_non_us_cities():
 def test_is_us_location_case_insensitive():
     assert is_us_location("LONDON") is False
     assert is_us_location("nyc") is True
+
+
+def test_is_acceptable_degree_level_rejects_phd_only_role():
+    assert is_acceptable_degree_level("Quantitative Trading Intern (PhD, Summer 2027)") is False
+
+
+def test_is_acceptable_degree_level_rejects_masters_only_role():
+    assert is_acceptable_degree_level("Quantitative Trading Intern (Master's, Summer 2027)") is False
+
+
+def test_is_acceptable_degree_level_rejects_ph_d_with_periods_variant():
+    assert is_acceptable_degree_level("Quantitative Analyst, Ph.D. Intern") is False
+
+
+def test_is_acceptable_degree_level_accepts_when_bachelors_also_listed():
+    assert is_acceptable_degree_level("Software Engineering Intern, BS/MS, Summer 2027") is True
+
+
+def test_is_acceptable_degree_level_accepts_plain_bachelors_role():
+    assert is_acceptable_degree_level("Software Engineering Intern, BS, Summer 2027") is True
+
+
+def test_is_acceptable_degree_level_accepts_role_with_no_degree_qualifier():
+    assert is_acceptable_degree_level("Quantitative Analyst Intern") is True
+
+
+def test_is_in_season_rejects_winter_without_summer():
+    assert is_in_season("Winter Co-Op") is False
+    assert is_in_season("Software Engineering Intern, Fall 2026") is False
+    assert is_in_season("Spring 2027 Marketing Intern") is False
+
+
+def test_is_in_season_accepts_summer():
+    assert is_in_season("Software Engineering Intern, Summer 2027") is True
+
+
+def test_is_in_season_accepts_when_no_season_mentioned():
+    assert is_in_season("Quantitative Analyst Intern") is True
+
+
+def test_is_in_season_accepts_summer_even_if_off_season_word_also_present():
+    assert is_in_season("Summer Internship (December-February)") is True

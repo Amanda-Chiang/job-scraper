@@ -12,6 +12,14 @@ def test_fetch_filters_to_internships_only(requests_mock):
     assert all(p.company == "Jane Street" for p in postings)
 
 
+def test_fetch_excludes_winter_internships(requests_mock):
+    with open("tests/fixtures/jane_street_sample.json") as f:
+        fixture = json.load(f)
+    requests_mock.get("https://www.janestreet.com/jobs/main.json", json=fixture)
+    postings = jane_street.fetch()
+    assert not any(p.title == "IT Operations Engineer" for p in postings)
+
+
 def test_fetch_builds_link_from_id(requests_mock):
     with open("tests/fixtures/jane_street_sample.json") as f:
         fixture = json.load(f)

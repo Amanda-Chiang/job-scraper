@@ -1,6 +1,13 @@
+import re
+
 from models import Posting, KeywordConfig
 
 LEVEL_KEYWORDS = ("intern", "internship", "co-op", "coop")
+
+ADVANCED_DEGREE_PATTERN = re.compile(r"\bphd\b|ph\.?d\.?|\bmasters?\b|master's|\bmsc\b|\bms\b", re.IGNORECASE)
+BACHELORS_PATTERN = re.compile(r"\bbs\b|\bb\.s\.?|bachelor|undergrad", re.IGNORECASE)
+
+OFF_SEASON_MARKERS = ("spring", "winter", "fall", "autumn")
 
 NON_US_LOCATION_MARKERS = (
     "london", "united kingdom", " uk", "uk,", "ldn",
@@ -21,6 +28,18 @@ NON_US_LOCATION_MARKERS = (
 def is_us_location(location: str) -> bool:
     loc = location.lower()
     return not any(marker in loc for marker in NON_US_LOCATION_MARKERS)
+
+
+def is_acceptable_degree_level(title: str) -> bool:
+    requires_advanced_degree_only = bool(ADVANCED_DEGREE_PATTERN.search(title)) and not BACHELORS_PATTERN.search(title)
+    return not requires_advanced_degree_only
+
+
+def is_in_season(title: str) -> bool:
+    lower = title.lower()
+    has_off_season = any(marker in lower for marker in OFF_SEASON_MARKERS)
+    has_summer = "summer" in lower
+    return not (has_off_season and not has_summer)
 
 
 def is_relevant(posting: Posting, keywords: KeywordConfig) -> bool:

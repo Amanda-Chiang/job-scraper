@@ -15,6 +15,8 @@ def fetch() -> list[Posting]:
         availability = (job.get("availability") or "").lower()
         if not any(marker in availability for marker in INTERNSHIP_AVAILABILITY_MARKERS):
             continue
+        if "summer" not in availability:
+            continue
         postings.append(
             Posting(
                 company="Jane Street",

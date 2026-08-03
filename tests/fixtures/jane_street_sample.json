@@ -25,5 +25,14 @@
     "city": "HKG",
     "team": "Machine Learning",
     "duration": "May-August"
+  },
+  {
+    "id": 8641377002,
+    "position": "IT Operations Engineer",
+    "category": "Technology",
+    "availability": "Winter Internship",
+    "city": "HKG",
+    "team": "IT and Systems Engineering",
+    "duration": "December-February"
   }
 ]
