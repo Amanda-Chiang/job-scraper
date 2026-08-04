@@ -2,7 +2,7 @@ import re
 
 from models import Posting, KeywordConfig
 
-LEVEL_KEYWORDS = ("intern", "internship", "co-op", "coop")
+LEVEL_PATTERN = re.compile(r"\bintern(ship)?\b|\bco-op\b|\bcoop\b", re.IGNORECASE)
 
 ADVANCED_DEGREE_PATTERN = re.compile(r"\bphd\b|ph\.?d\.?|\bmasters?\b|master's|\bmsc\b|\bms\b", re.IGNORECASE)
 BACHELORS_PATTERN = re.compile(r"\bbs\b|\bb\.s\.?|bachelor|undergrad", re.IGNORECASE)
@@ -65,7 +65,7 @@ def is_relevant(posting: Posting, keywords: KeywordConfig) -> bool:
         return False
     if posting.is_internship:
         return True
-    return any(kw in title for kw in LEVEL_KEYWORDS)
+    return bool(LEVEL_PATTERN.search(posting.title))
 
 
 def filter_relevant(postings: list[Posting], keywords: KeywordConfig) -> list[Posting]:

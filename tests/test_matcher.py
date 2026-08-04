@@ -145,3 +145,17 @@ def test_is_acceptable_department_does_not_false_positive_on_substring_it():
 
 def test_is_acceptable_department_accepts_normal_titles():
     assert is_acceptable_department("Software Engineer Intern") is True
+
+
+def test_rejects_internal_role_not_actually_an_internship():
+    # "Internal" contains "intern" as a substring - must not be mistaken for an internship
+    postings = [_posting("Full Stack Software Engineer, Internal Systems")]
+    keywords = KeywordConfig(include=["software engineer"], exclude=[])
+    assert filter_relevant(postings, keywords) == []
+
+
+def test_still_matches_internship_and_intern_and_co_op():
+    keywords = KeywordConfig(include=["software engineer"], exclude=[])
+    assert filter_relevant([_posting("Software Engineer Intern")], keywords) != []
+    assert filter_relevant([_posting("Software Engineer Internship")], keywords) != []
+    assert filter_relevant([_posting("Software Engineer Co-Op")], keywords) != []
