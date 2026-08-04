@@ -1,0 +1,31 @@
+{
+  "jobs": [
+    {
+      "id": 8621756002,
+      "title": "Spring 2027 Software Engineering Internship/Co-op",
+      "absolute_url": "https://boards.greenhouse.io/spacex/jobs/8621756002?gh_jid=8621756002",
+      "location": {"name": "Flexible - Any SpaceX Site"},
+      "metadata": [
+        {"id": 1, "name": "Employment Type", "value": "Intern", "value_type": "single_select"}
+      ]
+    },
+    {
+      "id": 7000001002,
+      "title": "Full Stack Software Engineer, Internal Systems",
+      "absolute_url": "https://boards.greenhouse.io/spacex/jobs/7000001002?gh_jid=7000001002",
+      "location": {"name": "Hawthorne, CA"},
+      "metadata": [
+        {"id": 2, "name": "Employment Type", "value": "Regular", "value_type": "single_select"}
+      ]
+    },
+    {
+      "id": 7000002002,
+      "title": "Accountant, International",
+      "absolute_url": "https://boards.greenhouse.io/spacex/jobs/7000002002?gh_jid=7000002002",
+      "location": {"name": "Hawthorne, CA"},
+      "metadata": [
+        {"id": 3, "name": "Employment Type", "value": "Temporary", "value_type": "single_select"}
+      ]
+    }
+  ]
+}

@@ -95,3 +95,4 @@ TikTok,unsupported,,internal ATS - candidate for future custom scraper
 Uber,unsupported,,internal ATS - candidate for future custom scraper
 Qualcomm,unsupported,,internal ATS - candidate for future custom scraper
 Citadel,unsupported,,blocked by Cloudflare bot challenge - deferred to Phase 3
+SpaceX,custom,spacex,Greenhouse board with Employment Type metadata for precise intern detection verified live 2026-08
