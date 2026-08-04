@@ -94,7 +94,9 @@ def test_record_source_result_failure_increments_and_records_error(client):
     ws = client._tab(CONFIG_TAB)
     ws.append_row(["Test Company 2", "greenhouse", "testtoken2", 1, "", "", "test row"])
     row_index = len(ws.get_all_values())
-    client.record_source_result(CONFIG_TAB, row_index, success=False, error="boom: connection refused")
+    client.record_source_result(
+        CONFIG_TAB, row_index, success=False, error="boom: connection refused", current_failures=1
+    )
     header = ws.row_values(1)
     updated = ws.row_values(row_index)
     row = dict(zip(header, updated))

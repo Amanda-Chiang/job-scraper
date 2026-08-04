@@ -107,7 +107,12 @@ class SheetsClient:
 
     @_retry_on_quota_error
     def record_source_result(
-        self, tab_name: str, row_index: int, success: bool, error: str | None
+        self,
+        tab_name: str,
+        row_index: int,
+        success: bool,
+        error: str | None,
+        current_failures: int = 0,
     ) -> None:
         ws = self._tab(tab_name)
         header = ws.row_values(1)
@@ -117,15 +122,14 @@ class SheetsClient:
                 "Last Success At": datetime.datetime.utcnow().isoformat(timespec="seconds"),
             }
         else:
-            current = ws.cell(row_index, header.index("Consecutive Failures") + 1).value
-            try:
-                current_failures = int(current or 0)
-            except ValueError:
-                current_failures = 0
             updates = {
                 "Consecutive Failures": current_failures + 1,
                 "Last Error": (error or "")[:300],
             }
-        for name, value in updates.items():
-            if name in header:
-                ws.update_cell(row_index, header.index(name) + 1, value)
+        batch = [
+            {"range": gspread.utils.rowcol_to_a1(row_index, header.index(name) + 1), "values": [[value]]}
+            for name, value in updates.items()
+            if name in header
+        ]
+        if batch:
+            ws.batch_update(batch)

@@ -43,7 +43,13 @@ def _handle_source_result(sheets, tab_name, source_config, topic_url, error):
     if error is None:
         sheets.record_source_result(tab_name, source_config.row_index, success=True, error=None)
         return
-    sheets.record_source_result(tab_name, source_config.row_index, success=False, error=str(error))
+    sheets.record_source_result(
+        tab_name,
+        source_config.row_index,
+        success=False,
+        error=str(error),
+        current_failures=source_config.consecutive_failures,
+    )
     failures = source_config.consecutive_failures + 1
     if failures == FAILURE_ALERT_THRESHOLD:
         name = getattr(source_config, "company", None) or source_config.identifier

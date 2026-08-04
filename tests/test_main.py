@@ -59,7 +59,7 @@ def test_company_fetch_failure_does_not_abort_run():
         main.run(sheets, topic_url="https://ntfy.sh/test")
     # company_a's failure is recorded...
     sheets.record_source_result.assert_any_call(
-        main.CONFIG_TAB, company_a.row_index, success=False, error="network error"
+        main.CONFIG_TAB, company_a.row_index, success=False, error="network error", current_failures=0
     )
     # ...but company_b is still fetched and its match still gets through, proving the run continued
     sheets.record_source_result.assert_any_call(
