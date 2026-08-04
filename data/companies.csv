@@ -44,8 +44,8 @@ LangChain,ashby,langchain,verified live (slug guessing) 2026-08
 LlamaIndex,ashby,llamaindex,verified live (slug guessing) 2026-08
 Pinecone,ashby,pinecone,verified live (slug guessing) 2026-08
 Weaviate,ashby,weaviate,verified live (slug guessing) 2026-08
-Qdrant,unsupported,,verify ATS token
-Hugging Face,unsupported,,verify ATS token
+Qdrant,workable,qdrant,verified live 2026-08
+Hugging Face,workable,huggingface,verified live 2026-08
 Snorkel AI,greenhouse,snorkelai,verified live (slug guessing) 2026-08
 Labelbox,greenhouse,labelbox,verified live (slug guessing) 2026-08
 Mistral AI,unsupported,,"verify ATS token - ""mistral"" lever slug returned empty"
@@ -69,11 +69,11 @@ Glean,greenhouse,gleanwork,verified live (slug guessing) 2026-08
 Harvey AI,ashby,harvey,verified live (slug guessing) 2026-08
 Abridge,ashby,abridge,verified live (slug guessing) 2026-08
 Hippocratic AI,unsupported,,verify ATS token
-Cognition Labs,greenhouse,cognitionlabs,verified live (slug guessing) 2026-08
+Cognition Labs,ashby,cognition,verified live 2026-08
 Anysphere,ashby,cursor,verified live (slug guessing) 2026-08
-Codeium,unsupported,,Windsurf - verify ATS token
-Applied Intuition,unsupported,,verify ATS token
-Waabi,unsupported,,verify ATS token
+Codeium,unsupported,,merged into Cognition Labs (acquired Windsurf/Codeium) - see Cognition Labs ashby board
+Applied Intuition,ashby,applied,verified live 2026-08
+Waabi,lever,waabi,verified live 2026-08
 Skild AI,unsupported,,verify ATS token
 Physical Intelligence,ashby,physicalintelligence,verified live (slug guessing) 2026-08
 Two Sigma,unsupported,,custom career site - candidate for future custom scraper

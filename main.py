@@ -12,7 +12,7 @@ from matcher import (
     is_us_location,
 )
 from sheets_client import AGGREGATOR_TAB, CONFIG_TAB, SheetsClient
-from sources import ashby, github_list, greenhouse, lever
+from sources import ashby, github_list, greenhouse, lever, workable
 from sources.custom import amazon, de_shaw, jane_street, spacex
 
 FAILURE_ALERT_THRESHOLD = 5
@@ -32,6 +32,8 @@ def _fetch_company_postings(company_config):
         return lever.fetch(company_config.company, company_config.identifier)
     if company_config.ats_type == "ashby":
         return ashby.fetch(company_config.company, company_config.identifier)
+    if company_config.ats_type == "workable":
+        return workable.fetch(company_config.company, company_config.identifier)
     if company_config.ats_type == "custom":
         return CUSTOM_SCRAPERS[company_config.identifier]()
     return []
