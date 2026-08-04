@@ -25,57 +25,57 @@ Together AI,greenhouse,togetherai,verified live during design
 Scale AI,greenhouse,scaleai,verified live during design
 Cohere,ashby,cohere,verified live during design
 ElevenLabs,ashby,elevenlabs,verified live during design
-Modal,unsupported,,verify ATS token
-Fireworks AI,unsupported,,verify ATS token
-Baseten,unsupported,,verify ATS token
-Anyscale,unsupported,,verify ATS token
+Modal,ashby,modal,verified live (slug guessing) 2026-08
+Fireworks AI,ashby,fireworksai,verified live (slug guessing) 2026-08
+Baseten,ashby,baseten,verified live (slug guessing) 2026-08
+Anyscale,ashby,anyscale,verified live (slug guessing) 2026-08
 Groq,unsupported,,verify ATS token
-Cerebras,unsupported,,verify ATS token
-SambaNova,unsupported,,verify ATS token
-Lambda,unsupported,,verify ATS token
+Cerebras,ashby,cerebras,verified live (slug guessing) 2026-08
+SambaNova,greenhouse,sambanovasystems,verified live (slug guessing) 2026-08
+Lambda,ashby,lambda,verified live (slug guessing) 2026-08
 Replicate,unsupported,,verify ATS token
-RunPod,unsupported,,verify ATS token
-CoreWeave,unsupported,,verify ATS token
-Crusoe Energy,unsupported,,verify ATS token
-Tenstorrent,unsupported,,verify ATS token
+RunPod,ashby,runpod,verified live (slug guessing) 2026-08
+CoreWeave,greenhouse,coreweave,verified live (slug guessing) 2026-08
+Crusoe Energy,ashby,crusoe,verified live (slug guessing) 2026-08
+Tenstorrent,greenhouse,tenstorrent,verified live (slug guessing) 2026-08
 Modular,unsupported,,verify ATS token
 Weights & Biases,unsupported,,verify ATS token
-LangChain,unsupported,,verify ATS token
-LlamaIndex,unsupported,,verify ATS token
-Pinecone,unsupported,,verify ATS token
-Weaviate,unsupported,,verify ATS token
+LangChain,ashby,langchain,verified live (slug guessing) 2026-08
+LlamaIndex,ashby,llamaindex,verified live (slug guessing) 2026-08
+Pinecone,ashby,pinecone,verified live (slug guessing) 2026-08
+Weaviate,ashby,weaviate,verified live (slug guessing) 2026-08
 Qdrant,unsupported,,verify ATS token
 Hugging Face,unsupported,,verify ATS token
-Snorkel AI,unsupported,,verify ATS token
-Labelbox,unsupported,,verify ATS token
-Mistral AI,unsupported,,verify ATS token - "mistral" lever slug returned empty
-Anthropic,unsupported,,verify ATS token
-Perplexity AI,unsupported,,verify ATS token - greenhouse "perplexityai" returned 404
-xAI,unsupported,,verify ATS token
-Stability AI,unsupported,,verify ATS token
-Character.AI,unsupported,,verify ATS token
-Inflection AI,unsupported,,verify ATS token
+Snorkel AI,greenhouse,snorkelai,verified live (slug guessing) 2026-08
+Labelbox,greenhouse,labelbox,verified live (slug guessing) 2026-08
+Mistral AI,unsupported,,"verify ATS token - ""mistral"" lever slug returned empty"
+Anthropic,greenhouse,anthropic,verified live (slug guessing) 2026-08
+Perplexity AI,ashby,perplexity,verified live (slug guessing) 2026-08
+xAI,greenhouse,xai,verified live (slug guessing) 2026-08
+Stability AI,greenhouse,stabilityai,verified live (slug guessing) 2026-08
+Character.AI,ashby,character,verified live (slug guessing) 2026-08
+Inflection AI,greenhouse,inflectionai,verified live (slug guessing) 2026-08
 Adept AI,unsupported,,verify ATS token
-Imbue,unsupported,,verify ATS token
-Reka AI,unsupported,,verify ATS token
-Runway,unsupported,,verify ATS token
-Luma AI,unsupported,,verify ATS token
-Suno,unsupported,,verify ATS token
-Synthesia,unsupported,,verify ATS token
-Writer,unsupported,,verify ATS token
-Sierra,unsupported,,verify ATS token
-Cresta,unsupported,,verify ATS token
-Glean,unsupported,,verify ATS token
-Harvey AI,unsupported,,verify ATS token
-Abridge,unsupported,,verify ATS token
+Imbue,greenhouse,imbue,verified live (slug guessing) 2026-08
+Reka AI,ashby,reka,verified live (slug guessing) 2026-08
+Runway,ashby,runway,verified live (slug guessing) 2026-08
+Luma AI,ashby,lumaai,verified live (slug guessing) 2026-08
+Suno,ashby,suno,verified live (slug guessing) 2026-08
+Synthesia,ashby,synthesia,verified live (slug guessing) 2026-08
+Writer,ashby,writer,verified live (slug guessing) 2026-08
+Sierra,ashby,sierra,verified live (slug guessing) 2026-08
+Cresta,greenhouse,cresta,verified live (slug guessing) 2026-08
+Glean,greenhouse,gleanwork,verified live (slug guessing) 2026-08
+Harvey AI,ashby,harvey,verified live (slug guessing) 2026-08
+Abridge,ashby,abridge,verified live (slug guessing) 2026-08
 Hippocratic AI,unsupported,,verify ATS token
-Cognition Labs,unsupported,,verify ATS token
-Anysphere,unsupported,,Cursor - verify ATS token
+Cognition Labs,greenhouse,cognitionlabs,verified live (slug guessing) 2026-08
+Anysphere,ashby,cursor,verified live (slug guessing) 2026-08
 Codeium,unsupported,,Windsurf - verify ATS token
 Applied Intuition,unsupported,,verify ATS token
 Waabi,unsupported,,verify ATS token
 Skild AI,unsupported,,verify ATS token
-Physical Intelligence,unsupported,,verify ATS token
+Physical Intelligence,ashby,physicalintelligence,verified live (slug guessing) 2026-08
 Two Sigma,unsupported,,custom career site - candidate for future custom scraper
 Point72,unsupported,,custom career site - candidate for future custom scraper
 Susquehanna (SIG),unsupported,,custom career site - candidate for future custom scraper
