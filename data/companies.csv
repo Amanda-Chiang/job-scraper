@@ -81,7 +81,7 @@ Point72,unsupported,,custom career site - candidate for future custom scraper
 Susquehanna (SIG),unsupported,,custom career site - candidate for future custom scraper
 Google,unsupported,,internal ATS - candidate for future custom scraper
 Meta,unsupported,,internal ATS - candidate for future custom scraper
-Amazon,unsupported,,internal ATS - candidate for future custom scraper
+Amazon,custom,amazon,public jobs.json API verified live 2026-08
 Microsoft,unsupported,,internal ATS (Workday) - candidate for future custom scraper
 Apple,unsupported,,internal ATS - candidate for future custom scraper
 Netflix,unsupported,,internal ATS - candidate for future custom scraper

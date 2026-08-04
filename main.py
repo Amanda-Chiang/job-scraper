@@ -13,13 +13,14 @@ from matcher import (
 )
 from sheets_client import AGGREGATOR_TAB, CONFIG_TAB, SheetsClient
 from sources import ashby, github_list, greenhouse, lever
-from sources.custom import de_shaw, jane_street
+from sources.custom import amazon, de_shaw, jane_street
 
 FAILURE_ALERT_THRESHOLD = 5
 
 CUSTOM_SCRAPERS = {
     "jane_street": jane_street.fetch,
     "de_shaw": de_shaw.fetch,
+    "amazon": amazon.fetch,
 }
 
 

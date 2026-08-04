@@ -1,0 +1,26 @@
+{
+  "error": null,
+  "hits": 2,
+  "jobs": [
+    {
+      "id": "92b0fa1c-47c1-453f-8baf-41d46ec98e7b",
+      "id_icims": "10435114",
+      "title": "Public Policy Intern",
+      "city": "Arlington",
+      "state": "VA",
+      "normalized_location": "Arlington, Virginia, USA",
+      "job_path": "/en/jobs/10435114/public-policy-intern",
+      "is_intern": null
+    },
+    {
+      "id": "3136266",
+      "id_icims": null,
+      "title": "Robotics - Software Development Engineer Intern/Co-op - 2026",
+      "city": "Westboro",
+      "state": "MA",
+      "normalized_location": "Westborough, Massachusetts, USA",
+      "job_path": "/en/jobs/3136266/robotics-software-development-engineer-intern-co-op-2026",
+      "is_intern": null
+    }
+  ]
+}
