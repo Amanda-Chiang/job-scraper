@@ -147,3 +147,37 @@ class SheetsClient:
         ]
         if batch:
             ws.batch_update(batch)
+
+    @_retry_on_quota_error
+    def record_source_results(self, tab_name: str, results: list[dict]) -> None:
+        """Batched form of record_source_result - writes results for MANY sources
+        in a single API call instead of one call per source. Each result dict:
+        {"row_index": int, "success": bool, "error": str | None, "current_failures": int}.
+        With dozens of tracked companies, calling record_source_result once per
+        company was itself enough to exceed the Sheets API per-minute write quota
+        on every run - this collapses that down to one call per tab per run.
+        """
+        ws = self._tab(tab_name)
+        header = self._header(tab_name)
+        batch = []
+        for result in results:
+            if result["success"]:
+                updates = {
+                    "Consecutive Failures": 0,
+                    "Last Success At": datetime.datetime.utcnow().isoformat(timespec="seconds"),
+                }
+            else:
+                updates = {
+                    "Consecutive Failures": result.get("current_failures", 0) + 1,
+                    "Last Error": (result.get("error") or "")[:300],
+                }
+            for name, value in updates.items():
+                if name in header:
+                    batch.append(
+                        {
+                            "range": gspread.utils.rowcol_to_a1(result["row_index"], header.index(name) + 1),
+                            "values": [[value]],
+                        }
+                    )
+        if batch:
+            ws.batch_update(batch)

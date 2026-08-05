@@ -58,13 +58,13 @@ def test_company_fetch_failure_does_not_abort_run():
     with patch("main.greenhouse.fetch", side_effect=[Exception("network error"), [posting_b]]), \
          patch("main.notifier.send_posting") as mock_notify, patch("main.notifier.send_text"):
         main.run(sheets, topic_url="https://ntfy.sh/test")
-    # company_a's failure is recorded...
-    sheets.record_source_result.assert_any_call(
-        main.CONFIG_TAB, company_a.row_index, success=False, error="network error", current_failures=0
-    )
-    # ...but company_b is still fetched and its match still gets through, proving the run continued
-    sheets.record_source_result.assert_any_call(
-        main.CONFIG_TAB, company_b.row_index, success=True, error=None
+    # both results are batched into one call, covering the failure and the continuation
+    sheets.record_source_results.assert_called_once_with(
+        main.CONFIG_TAB,
+        [
+            {"row_index": company_a.row_index, "success": False, "error": "network error", "current_failures": 0},
+            {"row_index": company_b.row_index, "success": True, "error": None, "current_failures": 0},
+        ],
     )
     mock_notify.assert_called_once_with("https://ntfy.sh/test", posting_b)
 
@@ -98,7 +98,7 @@ def test_unsupported_ats_type_is_skipped_without_fetch():
     with patch("main.greenhouse.fetch") as mock_fetch:
         main.run(sheets, topic_url="https://ntfy.sh/test")
     mock_fetch.assert_not_called()
-    sheets.record_source_result.assert_not_called()
+    sheets.record_source_results.assert_not_called()
 
 
 def test_ensure_service_account_path_sets_path_on_first_run(tmp_path):

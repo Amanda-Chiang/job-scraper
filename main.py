@@ -39,17 +39,20 @@ def _fetch_company_postings(company_config):
     return []
 
 
-def _handle_source_result(sheets, tab_name, source_config, topic_url, error):
+def _result_entry(source_config, error):
     if error is None:
-        sheets.record_source_result(tab_name, source_config.row_index, success=True, error=None)
+        return {"row_index": source_config.row_index, "success": True, "error": None, "current_failures": 0}
+    return {
+        "row_index": source_config.row_index,
+        "success": False,
+        "error": str(error),
+        "current_failures": source_config.consecutive_failures,
+    }
+
+
+def _maybe_alert(topic_url, source_config, error):
+    if error is None:
         return
-    sheets.record_source_result(
-        tab_name,
-        source_config.row_index,
-        success=False,
-        error=str(error),
-        current_failures=source_config.consecutive_failures,
-    )
     failures = source_config.consecutive_failures + 1
     if failures == FAILURE_ALERT_THRESHOLD:
         name = getattr(source_config, "company", None) or source_config.identifier
@@ -68,25 +71,33 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
     existing_links = sheets.get_existing_links()
     new_matches = []
 
+    company_results = []
     for company_config in sheets.read_company_list():
         if company_config.ats_type == "unsupported":
             continue
         try:
             postings = _fetch_company_postings(company_config)
         except Exception as exc:
-            _handle_source_result(sheets, CONFIG_TAB, company_config, topic_url, exc)
+            company_results.append(_result_entry(company_config, exc))
+            _maybe_alert(topic_url, company_config, exc)
             continue
-        _handle_source_result(sheets, CONFIG_TAB, company_config, topic_url, None)
+        company_results.append(_result_entry(company_config, None))
         new_matches.extend(filter_relevant(postings, keywords))
+    if company_results:
+        sheets.record_source_results(CONFIG_TAB, company_results)
 
+    aggregator_results = []
     for aggregator_config in sheets.read_aggregator_sources():
         try:
             postings = github_list.fetch(aggregator_config.identifier)
         except Exception as exc:
-            _handle_source_result(sheets, AGGREGATOR_TAB, aggregator_config, topic_url, exc)
+            aggregator_results.append(_result_entry(aggregator_config, exc))
+            _maybe_alert(topic_url, aggregator_config, exc)
             continue
-        _handle_source_result(sheets, AGGREGATOR_TAB, aggregator_config, topic_url, None)
+        aggregator_results.append(_result_entry(aggregator_config, None))
         new_matches.extend(postings)  # trusted as-is — no matcher call
+    if aggregator_results:
+        sheets.record_source_results(AGGREGATOR_TAB, aggregator_results)
 
     eligible_matches = [
         p for p in new_matches

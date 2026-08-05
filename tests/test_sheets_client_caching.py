@@ -58,3 +58,48 @@ def test_record_source_result_across_many_companies_reuses_cached_tab_and_header
     mock_spreadsheet.worksheet.assert_called_once_with(CONFIG_TAB)
     mock_ws.row_values.assert_called_once_with(1)
     assert mock_ws.batch_update.call_count == 68
+
+
+def test_record_source_results_writes_many_companies_in_a_single_api_call():
+    # This is the further optimization beyond per-call caching: instead of
+    # one batch_update call per company (68 calls), collapse all of them
+    # into ONE batch_update call covering every company's updates at once.
+    client, mock_spreadsheet = _client_with_mocked_spreadsheet()
+    mock_ws = MagicMock()
+    mock_ws.row_values.return_value = [
+        "Company", "ATS Type", "Board Token or Slug",
+        "Consecutive Failures", "Last Error", "Last Success At", "Notes",
+    ]
+    mock_spreadsheet.worksheet.return_value = mock_ws
+
+    results = [
+        {"row_index": i, "success": True, "error": None, "current_failures": 0}
+        for i in range(2, 70)  # 68 companies
+    ]
+    client.record_source_results(CONFIG_TAB, results)
+
+    mock_spreadsheet.worksheet.assert_called_once_with(CONFIG_TAB)
+    mock_ws.row_values.assert_called_once_with(1)
+    mock_ws.batch_update.assert_called_once()
+    # 2 fields updated (Consecutive Failures + Last Success At) per company
+    assert len(mock_ws.batch_update.call_args[0][0]) == 68 * 2
+
+
+def test_record_source_results_handles_mixed_success_and_failure():
+    client, mock_spreadsheet = _client_with_mocked_spreadsheet()
+    mock_ws = MagicMock()
+    mock_ws.row_values.return_value = [
+        "Company", "ATS Type", "Board Token or Slug",
+        "Consecutive Failures", "Last Error", "Last Success At", "Notes",
+    ]
+    mock_spreadsheet.worksheet.return_value = mock_ws
+
+    results = [
+        {"row_index": 2, "success": True, "error": None, "current_failures": 0},
+        {"row_index": 3, "success": False, "error": "boom", "current_failures": 2},
+    ]
+    client.record_source_results(CONFIG_TAB, results)
+
+    mock_ws.batch_update.assert_called_once()
+    batch = mock_ws.batch_update.call_args[0][0]
+    assert len(batch) == 4  # 2 fields each for the success and failure entries
