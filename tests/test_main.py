@@ -1,3 +1,4 @@
+import os
 from unittest.mock import MagicMock, patch
 
 from models import AggregatorConfig, CompanyConfig, KeywordConfig, Posting
@@ -98,3 +99,32 @@ def test_unsupported_ats_type_is_skipped_without_fetch():
         main.run(sheets, topic_url="https://ntfy.sh/test")
     mock_fetch.assert_not_called()
     sheets.record_source_result.assert_not_called()
+
+
+def test_ensure_service_account_path_sets_path_on_first_run(tmp_path):
+    target = str(tmp_path / "service-account.json")
+    env = {"GOOGLE_SERVICE_ACCOUNT_JSON_B64": "eyJhIjogMX0="}  # base64 of {"a": 1}
+    main.ensure_service_account_path(env, service_account_path=target)
+    assert env["GOOGLE_SERVICE_ACCOUNT_PATH"] == target
+    assert os.path.exists(target)
+
+
+def test_ensure_service_account_path_sets_path_even_if_file_already_exists(tmp_path):
+    # Regression test: a container reused across process runs (e.g. Railway's
+    # cron restarting the same container) can already have the file on disk
+    # from a prior run, but GOOGLE_SERVICE_ACCOUNT_PATH must still be set on
+    # THIS run's environment, since env vars don't persist across process starts.
+    target = str(tmp_path / "service-account.json")
+    with open(target, "wb") as f:
+        f.write(b'{"a": 1}')
+    env = {"GOOGLE_SERVICE_ACCOUNT_JSON_B64": "eyJhIjogMX0="}
+    main.ensure_service_account_path(env, service_account_path=target)
+    assert env["GOOGLE_SERVICE_ACCOUNT_PATH"] == target
+
+
+def test_ensure_service_account_path_does_nothing_without_b64_var(tmp_path):
+    target = str(tmp_path / "service-account.json")
+    env = {}
+    main.ensure_service_account_path(env, service_account_path=target)
+    assert "GOOGLE_SERVICE_ACCOUNT_PATH" not in env
+    assert not os.path.exists(target)

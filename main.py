@@ -104,18 +104,29 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
             print(f"Failed to send notification for {posting.link}: {exc}")
 
 
+def ensure_service_account_path(env: dict, service_account_path: str = "/tmp/service-account.json") -> None:
+    """If GOOGLE_SERVICE_ACCOUNT_JSON_B64 is set, decode it to a file (once) and
+    always set GOOGLE_SERVICE_ACCOUNT_PATH to point at it - regardless of whether
+    the file already existed from a prior process run in a reused container.
+    A container can outlive a single `python main.py` invocation (e.g. Railway
+    reusing it across cron ticks), so GOOGLE_SERVICE_ACCOUNT_PATH must be set on
+    every run even if the file itself doesn't need to be rewritten.
+    """
+    b64_value = env.get("GOOGLE_SERVICE_ACCOUNT_JSON_B64")
+    if not b64_value:
+        return
+    if not os.path.exists(service_account_path):
+        cleaned = "".join(b64_value.split())
+        cleaned += "=" * (-len(cleaned) % 4)
+        decoded = base64.b64decode(cleaned)
+        with open(service_account_path, "wb") as f:
+            f.write(decoded)
+    env["GOOGLE_SERVICE_ACCOUNT_PATH"] = service_account_path
+
+
 if __name__ == "__main__":
     try:
-        print("DEBUG env var names visible to this container:", sorted(os.environ.keys()))
-        b64_present = bool(os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON_B64"))
-        print(f"DEBUG GOOGLE_SERVICE_ACCOUNT_JSON_B64 present: {b64_present}")
-        if os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON_B64") and not os.path.exists("/tmp/service-account.json"):
-            b64_value = "".join(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON_B64"].split())
-            b64_value += "=" * (-len(b64_value) % 4)
-            decoded = base64.b64decode(b64_value)
-            with open("/tmp/service-account.json", "wb") as f:
-                f.write(decoded)
-            os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"] = "/tmp/service-account.json"
+        ensure_service_account_path(os.environ)
         sheets_client = SheetsClient(
             service_account_path=os.environ["GOOGLE_SERVICE_ACCOUNT_PATH"],
             sheet_id=os.environ["GOOGLE_SHEET_ID"],
