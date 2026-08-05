@@ -106,6 +106,9 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
 
 if __name__ == "__main__":
     try:
+        print("DEBUG env var names visible to this container:", sorted(os.environ.keys()))
+        b64_present = bool(os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON_B64"))
+        print(f"DEBUG GOOGLE_SERVICE_ACCOUNT_JSON_B64 present: {b64_present}")
         if os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON_B64") and not os.path.exists("/tmp/service-account.json"):
             b64_value = "".join(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON_B64"].split())
             b64_value += "=" * (-len(b64_value) % 4)
