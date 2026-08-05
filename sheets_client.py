@@ -35,9 +35,23 @@ class SheetsClient:
         gc = gspread.service_account(filename=service_account_path)
         self._spreadsheet = gc.open_by_key(sheet_id)
         self._tracker_tab = tracker_tab
+        self._tab_cache: dict[str, gspread.Worksheet] = {}
+        self._header_cache: dict[str, list[str]] = {}
 
     def _tab(self, name: str):
-        return self._spreadsheet.worksheet(name)
+        # gspread.Spreadsheet.worksheet() calls fetch_sheet_metadata() on every
+        # invocation - uncached, this made record_source_result alone issue an
+        # extra API call per company (called once per company per run), which
+        # at ~68 active companies was enough on its own to blow through the
+        # per-minute Sheets API quota on every single run.
+        if name not in self._tab_cache:
+            self._tab_cache[name] = self._spreadsheet.worksheet(name)
+        return self._tab_cache[name]
+
+    def _header(self, name: str) -> list[str]:
+        if name not in self._header_cache:
+            self._header_cache[name] = self._tab(name).row_values(1)
+        return self._header_cache[name]
 
     @_retry_on_quota_error
     def read_company_list(self) -> list[CompanyConfig]:
@@ -83,7 +97,7 @@ class SheetsClient:
     @_retry_on_quota_error
     def get_existing_links(self) -> set[str]:
         ws = self._tab(self._tracker_tab)
-        header = ws.row_values(1)
+        header = self._header(self._tracker_tab)
         link_col = header.index("Link") + 1
         values = ws.col_values(link_col)[1:]
         return {v for v in values if v}
@@ -91,7 +105,7 @@ class SheetsClient:
     @_retry_on_quota_error
     def append_row(self, posting: Posting) -> None:
         ws = self._tab(self._tracker_tab)
-        header = ws.row_values(1)
+        header = self._header(self._tracker_tab)
         row = [""] * len(header)
         field_map = {
             "Company": posting.company,
@@ -115,7 +129,7 @@ class SheetsClient:
         current_failures: int = 0,
     ) -> None:
         ws = self._tab(tab_name)
-        header = ws.row_values(1)
+        header = self._header(tab_name)
         if success:
             updates = {
                 "Consecutive Failures": 0,
