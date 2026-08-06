@@ -56,3 +56,6 @@ exclude,principal
 exclude,sr.
 exclude,lead
 exclude,audit
+exclude_company,Optiver
+exclude_company,Susquehanna (SIG)
+exclude_company,Akuna Capital

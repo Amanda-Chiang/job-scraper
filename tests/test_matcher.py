@@ -2,6 +2,7 @@ from models import Posting, KeywordConfig
 from matcher import (
     filter_relevant,
     is_acceptable_analyst_role,
+    is_acceptable_company,
     is_acceptable_degree_level,
     is_acceptable_department,
     is_in_season,
@@ -159,3 +160,16 @@ def test_still_matches_internship_and_intern_and_co_op():
     assert filter_relevant([_posting("Software Engineer Intern")], keywords) != []
     assert filter_relevant([_posting("Software Engineer Internship")], keywords) != []
     assert filter_relevant([_posting("Software Engineer Co-Op")], keywords) != []
+
+
+def test_is_acceptable_company_rejects_excluded_company_case_insensitively():
+    assert is_acceptable_company("Optiver", ["Optiver", "Susquehanna (SIG)"]) is False
+    assert is_acceptable_company("OPTIVER", ["optiver"]) is False
+
+
+def test_is_acceptable_company_accepts_non_excluded_company():
+    assert is_acceptable_company("Jane Street", ["Optiver", "Susquehanna (SIG)"]) is True
+
+
+def test_is_acceptable_company_accepts_when_no_exclusions_configured():
+    assert is_acceptable_company("Optiver", []) is True

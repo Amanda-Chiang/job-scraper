@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -31,3 +31,4 @@ class AggregatorConfig:
 class KeywordConfig:
     include: list[str]
     exclude: list[str]
+    exclude_companies: list[str] = field(default_factory=list)

@@ -92,7 +92,8 @@ class SheetsClient:
         ]
         include = [kw for kw_type, kw in keyword_rows if kw_type == "include" and kw]
         exclude = [kw for kw_type, kw in keyword_rows if kw_type == "exclude" and kw]
-        return KeywordConfig(include=include, exclude=exclude)
+        exclude_companies = [kw for kw_type, kw in keyword_rows if kw_type == "exclude_company" and kw]
+        return KeywordConfig(include=include, exclude=exclude, exclude_companies=exclude_companies)
 
     @_retry_on_quota_error
     def get_existing_links(self) -> set[str]:

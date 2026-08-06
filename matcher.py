@@ -57,6 +57,10 @@ def is_acceptable_department(title: str) -> bool:
     return not IT_ROLE_PATTERN.search(title)
 
 
+def is_acceptable_company(company: str, excluded_companies: list[str]) -> bool:
+    return company.strip().lower() not in {c.strip().lower() for c in excluded_companies}
+
+
 def is_relevant(posting: Posting, keywords: KeywordConfig) -> bool:
     title = posting.title.lower()
     if not any(kw.lower() in title for kw in keywords.include):

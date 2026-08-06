@@ -6,6 +6,7 @@ from dedup import filter_new_postings
 from matcher import (
     filter_relevant,
     is_acceptable_analyst_role,
+    is_acceptable_company,
     is_acceptable_degree_level,
     is_acceptable_department,
     is_in_season,
@@ -106,6 +107,7 @@ def run(sheets: SheetsClient, topic_url: str) -> None:
         and is_in_season(p.title)
         and is_acceptable_analyst_role(p.title)
         and is_acceptable_department(p.title)
+        and is_acceptable_company(p.company, keywords.exclude_companies)
     ]
     for posting in filter_new_postings(eligible_matches, existing_links):
         sheets.append_row(posting)
