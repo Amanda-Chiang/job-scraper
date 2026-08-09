@@ -125,3 +125,98 @@ def test_append_row_refuses_to_write_when_company_or_link_header_missing():
     with pytest.raises(ValueError, match="Company"):
         client.append_row(posting)
     mock_ws.append_row.assert_not_called()
+
+
+_STATUS_RULE = {
+    "condition": {
+        "type": "ONE_OF_LIST",
+        "values": [{"userEnteredValue": "Not Applied"}, {"userEnteredValue": "Applied"}],
+    },
+    "strict": True,
+    "showCustomUi": True,
+}
+
+
+def _tracker_header():
+    return ["Company", "Link", "Position", "Location", "Date Applied", "Status", "Referral?", "Notes", "Date Found"]
+
+
+def _posting():
+    return Posting(
+        company="Acme", title="Software Engineer Intern", location="NYC",
+        link="https://acme.com/1", is_internship=True,
+    )
+
+
+def test_append_row_applies_existing_status_dropdown_to_the_new_row():
+    # Regression test: the tracker's Status dropdown was only set on a fixed
+    # range in the sheet by hand (e.g. rows 2-331). Once the tracker grows
+    # past that range, newly appended rows silently lose the dropdown. This
+    # explicitly copies whatever rule already exists onto every new row.
+    client, mock_spreadsheet = _client_with_mocked_spreadsheet()
+    mock_ws = MagicMock()
+    mock_ws.id = 12345
+    mock_ws.row_values.return_value = _tracker_header()
+    mock_ws.append_row.return_value = {"updates": {"updatedRange": "'Summer 2027'!A214:I214"}}
+    mock_spreadsheet.worksheet.return_value = mock_ws
+    mock_spreadsheet.fetch_sheet_metadata.return_value = {
+        "sheets": [{"data": [{"rowData": [{"values": [{"dataValidation": _STATUS_RULE}]}]}]}]
+    }
+
+    client.append_row(_posting())
+
+    mock_spreadsheet.batch_update.assert_called_once()
+    request = mock_spreadsheet.batch_update.call_args[0][0]["requests"][0]["setDataValidation"]
+    assert request["rule"] == _STATUS_RULE
+    assert request["range"]["sheetId"] == 12345
+    assert request["range"]["startRowIndex"] == 213  # 0-indexed row 214
+    assert request["range"]["endRowIndex"] == 214
+    status_col_index = _tracker_header().index("Status")
+    assert request["range"]["startColumnIndex"] == status_col_index
+
+
+def test_append_row_skips_validation_when_no_status_column():
+    client, mock_spreadsheet = _client_with_mocked_spreadsheet()
+    mock_ws = MagicMock()
+    mock_ws.row_values.return_value = ["Company", "Link", "Position", "Location"]
+    mock_ws.append_row.return_value = {"updates": {"updatedRange": "'Summer 2027'!A5:D5"}}
+    mock_spreadsheet.worksheet.return_value = mock_ws
+
+    client.append_row(_posting())
+
+    mock_spreadsheet.fetch_sheet_metadata.assert_not_called()
+    mock_spreadsheet.batch_update.assert_not_called()
+
+
+def test_append_row_skips_validation_when_no_existing_rule_found():
+    client, mock_spreadsheet = _client_with_mocked_spreadsheet()
+    mock_ws = MagicMock()
+    mock_ws.row_values.return_value = _tracker_header()
+    mock_ws.append_row.return_value = {"updates": {"updatedRange": "'Summer 2027'!A214:I214"}}
+    mock_spreadsheet.worksheet.return_value = mock_ws
+    mock_spreadsheet.fetch_sheet_metadata.return_value = {
+        "sheets": [{"data": [{"rowData": [{"values": [{}]}]}]}]  # no dataValidation present
+    }
+
+    client.append_row(_posting())
+
+    mock_spreadsheet.batch_update.assert_not_called()
+
+
+def test_status_validation_rule_is_looked_up_only_once_across_multiple_appends():
+    client, mock_spreadsheet = _client_with_mocked_spreadsheet()
+    mock_ws = MagicMock()
+    mock_ws.id = 1
+    mock_ws.row_values.return_value = _tracker_header()
+    mock_ws.append_row.return_value = {"updates": {"updatedRange": "'Summer 2027'!A214:I214"}}
+    mock_spreadsheet.worksheet.return_value = mock_ws
+    mock_spreadsheet.fetch_sheet_metadata.return_value = {
+        "sheets": [{"data": [{"rowData": [{"values": [{"dataValidation": _STATUS_RULE}]}]}]}]
+    }
+
+    client.append_row(_posting())
+    client.append_row(_posting())
+    client.append_row(_posting())
+
+    mock_spreadsheet.fetch_sheet_metadata.assert_called_once()
+    assert mock_spreadsheet.batch_update.call_count == 3

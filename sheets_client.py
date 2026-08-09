@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import functools
+import re
 import time
 
 import gspread
@@ -14,6 +15,9 @@ AGGREGATOR_TAB = "Aggregators"
 KEYWORDS_TAB = "Keywords"
 
 QUOTA_RETRY_DELAYS = (5, 15, 30)
+
+_UNSET = object()
+_ROW_FROM_RANGE = re.compile(r"![A-Z]+(\d+)")
 
 
 def _retry_on_quota_error(func):
@@ -37,6 +41,7 @@ class SheetsClient:
         self._tracker_tab = tracker_tab
         self._tab_cache: dict[str, gspread.Worksheet] = {}
         self._header_cache: dict[str, list[str]] = {}
+        self._status_validation_rule_cache = _UNSET
 
     def _tab(self, name: str):
         # gspread.Spreadsheet.worksheet() calls fetch_sheet_metadata() on every
@@ -103,6 +108,67 @@ class SheetsClient:
         values = ws.col_values(link_col)[1:]
         return {v for v in values if v}
 
+    def _status_validation_rule(self) -> dict | None:
+        """Read the Status column's existing dropdown rule (from row 2 of the
+        tracker tab) once and cache it, so it can be explicitly (re)applied to
+        every newly appended row. Without this, new rows only get the dropdown
+        if they happen to fall within whatever fixed range the user originally
+        applied validation to by hand in the Sheets UI - once the tracker grows
+        past that range, new rows silently lose the dropdown.
+        """
+        if self._status_validation_rule_cache is _UNSET:
+            header = self._header(self._tracker_tab)
+            rule = None
+            if "Status" in header:
+                status_col = header.index("Status") + 1
+                cell_range = gspread.utils.rowcol_to_a1(2, status_col)
+                meta = self._spreadsheet.fetch_sheet_metadata(
+                    {
+                        "ranges": [f"'{self._tracker_tab}'!{cell_range}"],
+                        "fields": "sheets.data.rowData.values.dataValidation",
+                    }
+                )
+                for sheet in meta.get("sheets", []):
+                    for row_data in sheet.get("data", [{}])[0].get("rowData", []):
+                        values = row_data.get("values", [])
+                        if values:
+                            rule = values[0].get("dataValidation")
+            self._status_validation_rule_cache = rule
+        return self._status_validation_rule_cache
+
+    def _apply_status_validation(self, ws, header, updated_range: str) -> None:
+        rule = self._status_validation_rule()
+        if not rule:
+            return
+        match = _ROW_FROM_RANGE.search(updated_range)
+        if not match:
+            return
+        row_index = int(match.group(1))
+        status_col = header.index("Status") + 1
+        try:
+            self._spreadsheet.batch_update(
+                {
+                    "requests": [
+                        {
+                            "setDataValidation": {
+                                "range": {
+                                    "sheetId": ws.id,
+                                    "startRowIndex": row_index - 1,
+                                    "endRowIndex": row_index,
+                                    "startColumnIndex": status_col - 1,
+                                    "endColumnIndex": status_col,
+                                },
+                                "rule": rule,
+                            }
+                        }
+                    ]
+                }
+            )
+        except gspread.exceptions.APIError as exc:
+            # The row's data is already written at this point - don't fail
+            # the whole append over a validation-copying nice-to-have.
+            print(f"Failed to apply Status dropdown validation to row {row_index}: {exc}")
+
     @_retry_on_quota_error
     def append_row(self, posting: Posting) -> None:
         ws = self._tab(self._tracker_tab)
@@ -124,7 +190,9 @@ class SheetsClient:
         for name, value in field_map.items():
             if name in header:
                 row[header.index(name)] = value
-        ws.append_row(row, value_input_option="RAW")
+        result = ws.append_row(row, value_input_option="RAW")
+        if "Status" in header:
+            self._apply_status_validation(ws, header, result["updates"]["updatedRange"])
 
     @_retry_on_quota_error
     def record_source_result(
