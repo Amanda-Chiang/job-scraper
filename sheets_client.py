@@ -107,6 +107,12 @@ class SheetsClient:
     def append_row(self, posting: Posting) -> None:
         ws = self._tab(self._tracker_tab)
         header = self._header(self._tracker_tab)
+        missing = [name for name in ("Company", "Link") if name not in header]
+        if missing:
+            raise ValueError(
+                f"Tracker tab '{self._tracker_tab}' header is missing required column(s) {missing} "
+                f"(current header: {header}) - refusing to append a row that would silently drop data"
+            )
         row = [""] * len(header)
         field_map = {
             "Company": posting.company,

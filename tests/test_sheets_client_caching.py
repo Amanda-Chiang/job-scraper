@@ -1,5 +1,8 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
+
+from models import Posting
 from sheets_client import SheetsClient, CONFIG_TAB
 
 
@@ -103,3 +106,22 @@ def test_record_source_results_handles_mixed_success_and_failure():
     mock_ws.batch_update.assert_called_once()
     batch = mock_ws.batch_update.call_args[0][0]
     assert len(batch) == 4  # 2 fields each for the success and failure entries
+
+
+def test_append_row_refuses_to_write_when_company_or_link_header_missing():
+    # Regression test: a header cell (e.g. "Company") getting accidentally
+    # overwritten in the live sheet used to cause append_row to silently
+    # skip that field instead of failing - new rows would land with a
+    # blank Company column and nobody would notice until much later.
+    client, mock_spreadsheet = _client_with_mocked_spreadsheet()
+    mock_ws = MagicMock()
+    mock_ws.row_values.return_value = ["y", "Link", "Position", "Location", "Date Found"]
+    mock_spreadsheet.worksheet.return_value = mock_ws
+
+    posting = Posting(
+        company="Acme", title="Software Engineer Intern", location="NYC",
+        link="https://acme.com/1", is_internship=True,
+    )
+    with pytest.raises(ValueError, match="Company"):
+        client.append_row(posting)
+    mock_ws.append_row.assert_not_called()
