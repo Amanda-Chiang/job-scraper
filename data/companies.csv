@@ -39,7 +39,7 @@ CoreWeave,greenhouse,coreweave,verified live (slug guessing) 2026-08
 Crusoe Energy,ashby,crusoe,verified live (slug guessing) 2026-08
 Tenstorrent,greenhouse,tenstorrent,verified live (slug guessing) 2026-08
 Modular,unsupported,,verify ATS token
-Weights & Biases,unsupported,,verify ATS token
+Weights & Biases,custom,wandb,verified live 2026-08 - CoreWeave Greenhouse board filtered by Acquisition Company metadata
 LangChain,ashby,langchain,verified live (slug guessing) 2026-08
 LlamaIndex,ashby,llamaindex,verified live (slug guessing) 2026-08
 Pinecone,ashby,pinecone,verified live (slug guessing) 2026-08
@@ -48,7 +48,7 @@ Qdrant,workable,qdrant,verified live 2026-08
 Hugging Face,workable,huggingface,verified live 2026-08
 Snorkel AI,greenhouse,snorkelai,verified live (slug guessing) 2026-08
 Labelbox,greenhouse,labelbox,verified live (slug guessing) 2026-08
-Mistral AI,unsupported,,"verify ATS token - ""mistral"" lever slug returned empty"
+Mistral AI,ashby,mistral.ai,"verified live 2026-08 - ashby slug is ""mistral.ai"" not ""mistral"""
 Anthropic,greenhouse,anthropic,verified live (slug guessing) 2026-08
 Perplexity AI,ashby,perplexity,verified live (slug guessing) 2026-08
 xAI,greenhouse,xai,verified live (slug guessing) 2026-08
@@ -74,7 +74,7 @@ Anysphere,ashby,cursor,verified live (slug guessing) 2026-08
 Codeium,unsupported,,merged into Cognition Labs (acquired Windsurf/Codeium) - see Cognition Labs ashby board
 Applied Intuition,ashby,applied,verified live 2026-08
 Waabi,lever,waabi,verified live 2026-08
-Skild AI,unsupported,,verify ATS token
+Skild AI,greenhouse,skildai-careers,verified live 2026-08
 Physical Intelligence,ashby,physicalintelligence,verified live (slug guessing) 2026-08
 Two Sigma,unsupported,,custom career site - candidate for future custom scraper
 Point72,greenhouse,point72,verified live 2026-08
@@ -83,13 +83,13 @@ Meta,unsupported,,internal ATS - candidate for future custom scraper
 Amazon,custom,amazon,public jobs.json API verified live 2026-08
 Microsoft,unsupported,,internal ATS (Workday) - candidate for future custom scraper
 Apple,unsupported,,internal ATS - candidate for future custom scraper
-Netflix,unsupported,,internal ATS - candidate for future custom scraper
-NVIDIA,unsupported,,internal ATS (Workday) - candidate for future custom scraper
+Netflix,custom,netflix,"verified live 2026-08 - Eightfold.ai API, public and unauthenticated"
+NVIDIA,workday,nvidia.wd5|nvidia|NVIDIAExternalCareerSite,"verified live 2026-08 - generic Workday connector, limit capped at 20 by their API"
 Tesla,unsupported,,internal ATS - candidate for future custom scraper
-Oracle,unsupported,,internal ATS - candidate for future custom scraper
-IBM,unsupported,,internal ATS - candidate for future custom scraper
-Salesforce,unsupported,,Workday - candidate for future custom scraper
-Adobe,unsupported,,internal ATS - candidate for future custom scraper
+Oracle,custom,oracle_hcm,verified live 2026-08 - Oracle HCM Recruiting Cloud REST API
+IBM,unsupported,,confirmed blocked by AWS WAF bot challenge on all endpoints (like Citadel) - deferred to Phase 3
+Salesforce,workday,salesforce.wd12|salesforce|External_Career_Site,verified live 2026-08 - generic Workday connector
+Adobe,workday,adobe.wd5|adobe|external_experienced,verified live 2026-08 - generic Workday connector
 TikTok,unsupported,,internal ATS - candidate for future custom scraper
 Uber,unsupported,,internal ATS - candidate for future custom scraper
 Qualcomm,unsupported,,internal ATS - candidate for future custom scraper

@@ -58,4 +58,5 @@ exclude,lead
 exclude,audit
 exclude_company,Optiver
 exclude_company,Susquehanna (SIG)
+exclude_company,Susquehanna
 exclude_company,Akuna Capital
