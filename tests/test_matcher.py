@@ -173,3 +173,49 @@ def test_is_acceptable_company_accepts_non_excluded_company():
 
 def test_is_acceptable_company_accepts_when_no_exclusions_configured():
     assert is_acceptable_company("Optiver", []) is True
+
+
+def test_is_us_location_rejects_unlisted_countries():
+    assert is_us_location("Tel Aviv, Israel") is False
+    assert is_us_location("Beijing, China") is False
+    assert is_us_location("Seoul, South Korea") is False
+    assert is_us_location("Warsaw, Poland") is False
+    assert is_us_location("Madrid, Spain") is False
+    assert is_us_location("São Paulo, Brazil") is False
+    assert is_us_location("Mexico City, Mexico") is False
+    assert is_us_location("Dubai, United Arab Emirates") is False
+
+
+def test_is_us_location_rejects_unlisted_cities_without_country():
+    assert is_us_location("Vancouver") is False
+    assert is_us_location("Montreal") is False
+    assert is_us_location("Munich") is False
+    assert is_us_location("Shanghai") is False
+    assert is_us_location("Taipei") is False
+
+
+def test_is_us_location_rejects_non_us_regions():
+    assert is_us_location("Remote - EMEA") is False
+    assert is_us_location("APAC") is False
+    assert is_us_location("Remote (Europe)") is False
+    assert is_us_location("LATAM") is False
+
+
+def test_is_us_location_keeps_ambiguous_locations():
+    assert is_us_location("") is True
+    assert is_us_location("Remote") is True
+    assert is_us_location("Multiple Locations") is True
+
+
+def test_is_us_location_keeps_us_cities_that_share_foreign_names():
+    assert is_us_location("Paris, TX") is True
+    assert is_us_location("Cambridge, MA") is True
+    assert is_us_location("Dublin, OH") is True
+    assert is_us_location("Ontario, CA") is True
+    assert is_us_location("Berlin, New Hampshire") is True
+    assert is_us_location("Remote - United States") is True
+
+
+def test_is_us_location_rejects_when_any_segment_is_non_us():
+    assert is_us_location("New York, NY; London, UK") is False
+    assert is_us_location("San Francisco, CA / Toronto, ON") is False
